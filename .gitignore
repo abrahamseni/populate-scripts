@@ -1,0 +1,6 @@
+node_modules
+rnChecks.js
+*.json
+savillsId.js
+
+*.env
