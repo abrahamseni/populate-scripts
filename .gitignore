@@ -1,6 +1,6 @@
 node_modules
 rnChecks.js
-*.json
+savillsCheckId.json
 savillsId.js
 
 *.env
