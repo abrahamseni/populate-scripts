@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-// import { checksId } from "./savillsId.js";
+import { API_VERSION, BASE_URL } from "./base.js";
 import { rnChecks } from "./rnChecks.js";
 
 const bearerToken = "";
@@ -12,6 +12,14 @@ function timeout(wait = 1000) {
       }, wait)
     )
   );
+}
+
+function createHeaders(token) {
+  return {
+    authorization: `Bearer ${token}`,
+    "Content-Type": "application/json-patch+json",
+    "api-version": API_VERSION,
+  };
 }
 
 function createBody(data) {
@@ -32,20 +40,17 @@ function createBody(data) {
   return body;
 }
 
-async function createMetadata({ method, url, token, data, createBody }) {
+async function createMetadata({ method, url, token, data }) {
+  // TODO: make it run in parallel
   for (let i = 0; i < data.length; i++) {
     //! always check the body before you run it!
     // console.log("body", createBody(data[i]));
 
     try {
-      await fetch(`https://platform.reapit.cloud${url}`, {
+      await fetch(`${BASE_URL}${url}`, {
         method,
         body: JSON.stringify(createBody(data[i])),
-        headers: {
-          authorization: `Bearer ${token}`,
-          "Content-Type": "application/json-patch+json",
-          "api-version": "2020-01-31",
-        },
+        headers: createHeaders(token),
       });
     } catch (error) {
       console.log(error);
@@ -60,5 +65,4 @@ createMetadata({
   data: rnChecks,
   url: "/metadata",
   token: bearerToken,
-  createBody,
 });
