@@ -41,7 +41,8 @@ function createBody(data) {
 }
 
 async function createMetadata({ method, url, token, data }) {
-  // TODO: make it run in parallel
+  // TODO: make it run in parallel ?
+  // or not, because we hit the same endpoint
   for (let i = 0; i < data.length; i++) {
     //! always check the body before you run it!
     // console.log("body", createBody(data[i]));

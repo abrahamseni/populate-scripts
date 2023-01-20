@@ -9,5 +9,8 @@
   "type": "module",
   "author": {
     "name": "Abraham Anak Agung"
+  },
+  "scripts": {
+    "run-script": "node index.js"
   }
 }
