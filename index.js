@@ -15,28 +15,29 @@ function timeout(wait = 1000, message) {
 function createHeaders(token) {
   return {
     authorization: `Bearer ${token}`,
-    "Content-Type": "application/json-patch+json",
+    "Content-Type": "application/json",
     "api-version": API_VERSION,
   };
 }
 
 function createBody(data) {
-  // TODO: always change the body logic here
-  const body = [
-    {
-      path: "checklistVariants",
-      value: ["standard"],
-      op: "add",
-    },
-  ];
+  //! always change the body logic here
+  // patch status
+  // const body = [
+  //   {
+  //     path: "checklistVariants",
+  //     value: ["standard"],
+  //     op: "add",
+  //   },
+  // ];
 
-  // const { id: entityId, value, ...others } = data;
+  const { entityType, entityId, metadata } = data;
 
-  // const body = {
-  //   entityType: "temptenancyrenewalcheckconfig",
-  //   entityId,
-  //   ...others,
-  // };
+  const body = {
+    entityType,
+    entityId,
+    metadata,
+  };
 
   return body;
 }
@@ -48,10 +49,10 @@ async function createMetadata({ method, url, token, data }) {
 
   for (let i = 0; i < data.length; i++) {
     //! always check the body before you run it!
-    // console.log("body", createBody(data[i]));
+    console.log("body", createBody(data[i]));
     //! check the body before you run this!
     // try {
-    //   await fetch(`${BASE_URL}${url}/${data[i].id}`, {
+    //   await fetch(url, {
     //     method,
     //     body: JSON.stringify(createBody(data[i])),
     //     headers: createHeaders(token),
@@ -65,11 +66,11 @@ async function createMetadata({ method, url, token, data }) {
 }
 
 //! Don't forget to add token here
-const bearerToken = "";
+const bearerToken = "testing";
 
 createMetadata({
-  method: "patch",
-  url: "/metadata",
+  method: "post",
+  url: `${BASE_URL}/metadata`,
   token: bearerToken,
   data: currentChecks,
 });
