@@ -33,6 +33,7 @@ function createBody(check) {
       lettings: {
         ...lettings,
         majorIncidentNote: "Included in Bulk Update",
+        hasChangedByUser: true,
       },
     },
   };
@@ -48,24 +49,26 @@ async function patchStatusAndMetadata({ method, url, token, data }) {
   for (let i = 0; i < data.length; i++) {
     //! always check the body before you run it!
     const check = data[i];
-    if (check.status !== "notNeeded" || check.status !== "completed") {
-      console.log("body", createBody(check));
+    if (check.status === "notNeeded" || check.status === "completed") {
+      continue;
     }
+    // console.log("body", createBody(check));
     //! check the body before you run this!
-    // try {
-    //   await fetch(url(check.id), {
-    //     method,
-    //     body: JSON.stringify(createBody(check)),
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //       "api-version": API_VERSION,
-    //     },
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    //   break;
-    // }
-    // await timeout(600, data[i].id);
+    try {
+      await fetch(url(check.id), {
+        method,
+        body: JSON.stringify(createBody(check)),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "api-version": API_VERSION,
+          "if-match": check._eTag,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      break;
+    }
+    await timeout(600, check.id);
   }
 }
 
