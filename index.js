@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
-import { API_VERSION, BASE_URL } from "./base.js";
-import { currentChecks } from "./currentChecks.js";
+import { API_VERSION, BASE_URL, BEARER_TOKEN } from "./base.js";
+import { checks } from "./data.js";
 
 function timeout(wait = 1000, message) {
   return new Promise((resolve) =>
@@ -10,14 +10,6 @@ function timeout(wait = 1000, message) {
       }, wait)
     )
   );
-}
-
-function createHeaders(token) {
-  return {
-    authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-    "api-version": API_VERSION,
-  };
 }
 
 function createBody(data) {
@@ -42,7 +34,7 @@ function createBody(data) {
   return body;
 }
 
-async function createMetadata({ method, url, token, data }) {
+async function patchStatusAndMetadata({ method, url, token, data }) {
   if (!token) {
     throw new Error("Please copy your token.");
   }
@@ -52,25 +44,25 @@ async function createMetadata({ method, url, token, data }) {
     console.log("body", createBody(data[i]));
     //! check the body before you run this!
     // try {
-    //   await fetch(url, {
+    //   await fetch(url(data[i].id), {
     //     method,
     //     body: JSON.stringify(createBody(data[i])),
-    //     headers: createHeaders(token),
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //       "api-version": API_VERSION,
+    //     },
     //   });
     // } catch (error) {
     //   console.log(error);
     //   break;
     // }
-    // await timeout(1000, i);
+    // await timeout(600, data[i].id);
   }
 }
 
-//! Don't forget to add token here
-const bearerToken = "testing";
-
-createMetadata({
-  method: "post",
-  url: `${BASE_URL}/metadata`,
-  token: bearerToken,
-  data: currentChecks,
+patchStatusAndMetadata({
+  method: "patch",
+  url: (checkId) => `${BASE_URL}/tenancies/ELL240030/checks/${checkId}`,
+  token: BEARER_TOKEN,
+  data: checks,
 });
