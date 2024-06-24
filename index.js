@@ -12,7 +12,7 @@ function timeout(wait = 1000, message) {
   );
 }
 
-function createBody(data) {
+function createBody(check) {
   //! always change the body logic here
   // patch status
   // const body = [
@@ -23,12 +23,18 @@ function createBody(data) {
   //   },
   // ];
 
-  const { entityType, entityId, metadata } = data;
+  const { metadata } = check;
+  const lettings = metadata?.lettings;
 
   const body = {
-    entityType,
-    entityId,
-    metadata,
+    status: "completed",
+    metadata: {
+      ...metadata,
+      lettings: {
+        ...lettings,
+        majorIncidentNote: "Included in Bulk Update",
+      },
+    },
   };
 
   return body;
@@ -41,12 +47,15 @@ async function patchStatusAndMetadata({ method, url, token, data }) {
 
   for (let i = 0; i < data.length; i++) {
     //! always check the body before you run it!
-    console.log("body", createBody(data[i]));
+    const check = data[i];
+    if (check.status !== "notNeeded" || check.status !== "completed") {
+      console.log("body", createBody(check));
+    }
     //! check the body before you run this!
     // try {
-    //   await fetch(url(data[i].id), {
+    //   await fetch(url(check.id), {
     //     method,
-    //     body: JSON.stringify(createBody(data[i])),
+    //     body: JSON.stringify(createBody(check)),
     //     headers: {
     //       Authorization: `Bearer ${token}`,
     //       "api-version": API_VERSION,
